@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Little Pet ❤️</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffd6e7, #dcd6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #4a3540;
+        }
+
+        .game {
+            width: 92%;
+            max-width: 430px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #e85d91;
+        }
+
+        .pet-area {
+            background: #fff0f6;
+            border-radius: 20px;
+            padding: 25px 10px;
+            margin-bottom: 20px;
+        }
+
+        .pet {
+            font-family: monospace;
+            font-size: 32px;
+            line-height: 1.2;
+            white-space: pre;
+            margin-bottom: 10px;
+        }
+
+        #petName {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #mood {
+            margin-top: 8px;
+            color: #806070;
+        }
+
+        .stats {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .stat {
+            margin-bottom: 15px;
+        }
+
+        .stat-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .bar {
+            width: 100%;
+            height: 18px;
+            background: #eee;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 50%;
+            border-radius: 20px;
+            transition: width 0.3s;
+        }
+
+        #happinessBar {
+            background: #ff77a8;
+        }
+
+        #hungerBar {
+            background: #ffb84d;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            border-radius: 15px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #ffd1e2;
+            color: #573846;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        button:hover {
+            background: #ffb8d1;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .secret {
+            grid-column: span 2;
+            background: #ff8fba;
+            color: white;
+        }
+
+        .message {
+            min-height: 50px;
+            margin-top: 20px;
+            padding: 12px;
+            background: #fff5f9;
+            border-radius: 15px;
+        }
+
+        .event {
+            color: #c84d7c;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .secret-screen {
+            text-align: center;
+        }
+
+        .heart {
+            font-size: 45px;
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .game {
+                padding: 18px;
+            }
+
+            .pet {
+                font-size: 26px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game" id="game">
+
+    <h1>My Little Pet ❤️</h1>
+
+    <div class="pet-area">
+
+        <div class="pet" id="pet">
+            /\_/\
+           ( ^.^ )
+            > ^ <
+        </div>
+
+        <div id="petName">Mochi</div>
+
+        <div id="mood">
+            Mochi is super happy!
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-title">
+                <span>Happiness</span>
+                <span id="happinessText">100</span>
+            </div>
+
+            <div class="bar">
+                <div class="bar-fill" id="happinessBar"></div>
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+                <span>Hunger</span>
+                <span id="hungerText">50</span>
+            </div>
+
+            <div class="bar">
+                <div class="bar-fill" id="hungerBar"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <button onclick="petPet()">
+            Pet
+        </button>
+
+        <button onclick="feedPet()">
+            Feed
+        </button>
+
+        <button onclick="playWithPet()">
+            Play
+        </button>
+
+        <button onclick="saveGame()">
+            Save
+        </button>
+
+        <button class="secret" onclick="secretMessage()">
+            ❤️ Secret
+        </button>
+
+    </div>
+
+
+    <div class="message" id="message">
+        Welcome! Take good care of Mochi.
+    </div>
+
+</div>
+
+
+<script>
+
+    // =========================
+    // PET DATA
+    // =========================
+
+    let petName = "Mochi";
+
+    let happiness = 100;
+    let hunger = 50;
+
+
+    // =========================
+    // LOAD SAVE
+    // =========================
+
+    function loadGame() {
+
+        let savedHappiness = localStorage.getItem("happiness");
+        let savedHunger = localStorage.getItem("hunger");
+
+        if (savedHappiness !== null) {
+            happiness = Number(savedHappiness);
+        }
+
+        if (savedHunger !== null) {
+            hunger = Number(savedHunger);
+        }
+
+    }
+
+
+    // =========================
+    // SAVE GAME
+    // =========================
+
+    function saveGame() {
+
+        localStorage.setItem("happiness", happiness);
+        localStorage.setItem("hunger", hunger);
+
+        showMessage("Game saved! ❤️");
+
+    }
+
+
+    // =========================
+    // LIMIT STATS
+    // =========================
+
+    function limitStats() {
+
+        if (happiness > 100) {
+            happiness = 100;
+        }
+
+        if (happiness < 0) {
+            happiness = 0;
+        }
+
+        if (hunger > 100) {
+            hunger = 100;
+        }
+
+        if (hunger < 0) {
+            hunger = 0;
+        }
+
+    }
+
+
+    // =========================
+    // UPDATE SCREEN
+    // =========================
+
+    function updateScreen() {
+
+        limitStats();
+
+        document.getElementById("happinessText").textContent = happiness;
+        document.getElementById("hungerText").textContent = hunger;
+
+        document.getElementById("happinessBar").style.width =
+            happiness + "%";
+
+        document.getElementById("hungerBar").style.width =
+            hunger + "%";
+
+        updatePet();
+
+    }
+
+
+    // =========================
+    // PET APPEARANCE
+    // =========================
+
+    function updatePet() {
+
+        let pet = document.getElementById("pet");
+        let mood = document.getElementById("mood");
+
+        if (hunger >= 80) {
+
+            pet.textContent =
+`   /\\_/\\
+  ( o.o )
+   > ω <`;
+
+            mood.textContent =
+                petName + " is REALLY hungry...";
+
+        }
+
+        else if (happiness <= 30) {
+
+            pet.textContent =
+`   /\\_/\\
+  ( T.T )
+   > ^ <`;
+
+            mood.textContent =
+                petName + " looks sad...";
+
+        }
+
+        else if (happiness >= 80) {
+
+            pet.textContent =
+`   /\\_/\\
+  ( ^.^ )
+   > ^ <`;
+
+            mood.textContent =
+                petName + " is super happy!";
+
+        }
+
+        else {
+
+            pet.textContent =
+`   /\\_/\\
+  ( -.- )
+   > ^ <`;
+
+            mood.textContent =
+                petName + " is feeling okay.";
+
+        }
+
+    }
+
+
+    // =========================
+    // PET
+    // =========================
+
+    function petPet() {
+
+        happiness += 10;
+
+        let messages = [
+
+            petName + ": Hehehe, I like that! ❤️",
+
+            petName + ": That feels nice!",
+
+            petName + ": More pets please!"
+
+        ];
+
+        let randomMessage =
+            messages[Math.floor(Math.random() * messages.length)];
+
+        showMessage(randomMessage);
+
+        decay();
+
+        randomEvent();
+
+        updateScreen();
+
+    }
+
+
+    // =========================
+    // FEED
+    // =========================
+
+    function feedPet() {
+
+        hunger -= 20;
+        happiness += 2;
+
+        showMessage(
+            petName + ": YUM! Thank you! ❤️"
+        );
+
+        decay();
+
+        randomEvent();
+
+        updateScreen();
+
+    }
+
+
+    // =========================
+    // PLAY
+    // =========================
+
+    function playWithPet() {
+
+        happiness += 15;
+        hunger += 10;
+
+        showMessage(
+            petName + ": WOOOO! Let's play!"
+        );
+
+        decay();
+
+        randomEvent();
+
+        updateScreen();
+
+    }
+
+
+    // =========================
+    // NATURAL DECAY
+    // =========================
+
+    function decay() {
+
+        hunger += 2;
+        happiness -= 1;
+
+        limitStats();
+
+    }
+
+
+    // =========================
+    // RANDOM EVENTS
+    // =========================
+
+    function randomEvent() {
+
+        let eventChance =
+            Math.floor(Math.random() * 10) + 1;
+
+        // 1 in 10 chance
+
+        if (eventChance === 1) {
+
+            let specialEvent =
+                Math.floor(Math.random() * 3) + 1;
+
+            if (specialEvent === 1) {
+
+                hunger -= 10;
+
+                showMessage(
+                    petName + " found a strawberry! 🍓"
+                );
+
+            }
+
+            else if (specialEvent === 2) {
+
+                happiness += 10;
+
+                showMessage(
+                    petName + " gave you a little heart! ❤️"
+                );
+
+            }
+
+            else {
+
+                happiness += 5;
+
+                showMessage(
+                    petName + " suddenly got the zoomies!"
+                );
+
+            }
+
+            limitStats();
+
+        }
+
+    }
+
+
+    // =========================
+    // SECRET MESSAGE
+    // =========================
+
+    function secretMessage() {
+
+        if (happiness >= 90 && hunger <= 30) {
+
+            document.getElementById("game").innerHTML = `
+
+                <div class="secret-screen">
+
+                    <div class="heart">
+                        ❤️
+                    </div>
+
+                    <h1>
+                        YOU FOUND THE SECRET
+                    </h1>
+
+                    <div class="pet">
+                       /\\_/\\
+                      ( ^.^ )
+                       > ❤️ <
+                    </div>
+
+                    <p>
+                        You took really good care of me.
+                    </p>
+
+                    <p>
+                        So I have something to tell you...
+                    </p>
+
+                    <br>
+
+                    <p>
+                        I made this little pet just for you.
+                    </p>
+
+                    <p>
+                        It might just be a small program,
+                        but I made every part of it myself.
+                    </p>
+
+                    <br>
+
+                    <p>
+                        I hope it makes you smile.
+                    </p>
+
+                    <h2>
+                        I love you ❤️
+                    </h2>
+
+                </div>
+
+            `;
+
+        }
+
+        else {
+
+            showMessage(
+                "Mochi: Take better care of me first! " +
+                "Get my happiness above 90 and hunger below 30."
+            );
+
+        }
+
+    }
+
+
+    // =========================
+    // MESSAGE
+    // =========================
+
+    function showMessage(text) {
+
+        document.getElementById("message").textContent = text;
+
+    }
+
+
+    // =========================
+    // START GAME
+    // =========================
+
+    loadGame();
+
+    updateScreen();
+
+</script>
+
+</body>
+</html>
